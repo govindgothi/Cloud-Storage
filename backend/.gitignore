@@ -1,0 +1,89 @@
+# =========================
+# Dependencies
+# =========================
+node_modules/
+.pnp
+.pnp.js
+
+# =========================
+# Build Output
+# =========================
+.next/
+out/
+dist/
+build/
+coverage/
+.cache/
+
+# =========================
+# Logs
+# =========================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# =========================
+# Environment / Secrets
+# =========================
+.env
+.env.*  
+!.env.example
+!.env.local.example
+
+# =========================
+# OS Files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Editor / IDE
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# =========================
+# TypeScript
+# =========================
+*.tsbuildinfo
+
+# =========================
+# Temporary Files
+# =========================
+tmp/
+temp/
+*.tmp
+
+# =========================
+# Testing
+# =========================
+playwright-report/
+test-results/
+
+# =========================
+# Prisma
+# =========================
+prisma/*.db
+prisma/*.db-journal
+
+# =========================
+# Docker
+# =========================
+.env.docker
+
+# =========================
+# Uploads (if local uploads)
+# =========================
+uploads/
+public/uploads/
+
+# =========================
+# Misc
+# =========================
+*.zip
+*.tar
+*.gz
