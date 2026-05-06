@@ -7,6 +7,12 @@ import { errorHandler } from "./utils/errorHandler.utils.js";
 const app = express();
 export const NODE_ENV = process.env.NODE_ENV;
 
+declare module "express-serve-static-core" {
+  interface Request {
+    clientIp?: string;
+  }
+}
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -35,9 +41,11 @@ app.get("/health", async(_, res:Response) => {
 
 // Import routes 
 import homeRouter from "./routes/home.routes.js"
+import userRouter from "./routes/auth.route.js"
 
 // Mount routes under base path "/api"
-app.use("/api",homeRouter)
+app.use("/api/home",homeRouter)
+app.use("/api/user",userRouter)
 
 // Global error handler
 app.use(errorHandler);

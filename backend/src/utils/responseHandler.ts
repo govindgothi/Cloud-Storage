@@ -1,16 +1,21 @@
-import { Response } from "express";
 import { HttpMessage, HttpStatus } from "../constant/globle.js";
 
+interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+  statusCode: number;
+}
 
 export const successResponse = <T>(
-  res: Response,
   data: T,
-  message = HttpMessage.OK,
-  statusCode:number = HttpStatus.OK
-) => {
-  return res.status(statusCode).json({
+  message: string = HttpMessage.OK,
+  statusCode: number = HttpStatus.OK
+): ApiResponse<T> => {
+  return {
     success: true,
     message,
     data,
-  });
+    statusCode,
+  };
 };

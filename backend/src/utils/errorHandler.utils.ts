@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { NODE_ENV } from "../app.js";
 
 type ErrorDetail = {
@@ -12,7 +12,7 @@ type ErrorDetailsObject = {
   error: ErrorDetail[];
 };
 
-class ApiError extends Error {
+export class ApiError extends Error {
   statusCode: number;
   success: boolean;
   message: string;
@@ -36,25 +36,26 @@ export const errorHandler = (
   err: any,
   _req: Request,
   res: Response,
+  next: NextFunction,
 ) => {
   if (err instanceof ApiError) {
+    console.log("errr-->", err);
     return res.status(err.statusCode).json({
       success: false,
       error: {
         statusCode: err.statusCode,
-        message:  NODE_ENV === "production" ? err.message : "Internal Server Error",
-        error: NODE_ENV === "production" ? null : err.error 
+        message:
+          NODE_ENV != "production" ? err.message : "Internal server error",
+        error: NODE_ENV != "production" ? err.error : null,
       },
     });
   }
-
-  console.error(err);
 
   return res.status(500).json({
     success: false,
     error: {
       code: "INTERNAL_SERVER_ERROR",
-      message: "Something went wrong",
+      message: NODE_ENV !== "production" ? err.message : "Something went wrong",
       details: null,
     },
   });
