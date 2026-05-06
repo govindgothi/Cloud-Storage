@@ -1,7 +1,7 @@
 
 import { Request, Response, NextFunction } from "express";
 
-import { formatZodError } from "../../validations/common/zodError.validations.js";
+import { formatZodError } from "../../validations/common/zodFormatError.validations.js";
 import { ZodType   } from "zod";
 
 export const validate =
