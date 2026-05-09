@@ -25,7 +25,7 @@ export const HttpMessage = {
   NOT_FOUND: "Resource not found",
   CONFLICT: "Resource already exists",
   UNPROCESSABLE_ENTITY: "Validation failed",
-
+  UNABLE_TO_PROCESS:"Unable to process request",
   // 5xx
   INTERNAL_SERVER_ERROR: "Internal server error",
 };
