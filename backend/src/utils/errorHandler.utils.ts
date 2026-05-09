@@ -22,7 +22,7 @@ export class ApiError extends Error {
     message: string,
     statusCode: number,
     success: boolean,
-    error = null,
+    error: ErrorDetailsObject | null= null,
   ) {
     super(message);
     this.statusCode = statusCode || 500;
