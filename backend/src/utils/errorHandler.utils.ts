@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { NODE_ENV } from "../app.js";
+
+const NODE_ENV = process.env.NODE_ENV
 
 type ErrorDetail = {
   field: string;
@@ -45,7 +46,7 @@ export const errorHandler = (
       error: {
         statusCode: err.statusCode,
         message:
-          NODE_ENV != "production" ? err.message : "Internal server error",
+        NODE_ENV != "production" ? err.message : "Internal server error",
         error: NODE_ENV != "production" ? err.error : null,
       },
     });
