@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "node --env-file=.env --watch-path=. --import tsx ./src/index.ts",
     "build": "tsc",
+    "worker:email": "node --env-file=.env --watch-path=. --import tsx ./src/workers/email.worker.ts",
+    "worker:otp": "node --env-file=.env --watch-path=. --import tsx ./src/workers/otpLogs.worker.ts",
+    "workers": "concurrently \"npm run worker:email\" \"npm run worker:otp\"",
     "start": "node --env-file=.env dist/index.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
@@ -15,9 +18,13 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "bcrypt": "^6.0.0",
+    "bullmq": "^5.76.6",
+    "concurrently": "^9.2.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "express": "^5.2.1",
+    "ioredis": "^5.10.1",
     "mysql2": "^3.22.3",
     "promises": "^0.2.5",
     "redis": "^5.12.1",
@@ -25,6 +32,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@types/bcrypt": "^6.0.0",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
