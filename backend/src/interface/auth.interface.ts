@@ -49,3 +49,8 @@ export type updateIpBlockType = {
   ip: string,
   redisBlockedIpKey: string
 }
+
+export type customIpRateLimitType ={
+  ipKey:string,
+  emailKey:string,
+}
