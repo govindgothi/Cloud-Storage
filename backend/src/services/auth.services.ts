@@ -14,6 +14,7 @@ import { getRedisClient } from "../db/redis.db.js";
 import { successResponse } from "../utils/responseHandler.js";
 import { addOtpLogProducer, updateEmailBlockStatusProducer, updateIpBlockStatusProducer } from "../producers/otpLogs.producers.js";
 import { hashValue, verifyHash } from "../utils/bcrypt.utils.js";
+import { forgetPasswordServiceType, userloginServiceType } from "../interface/auth.interface.js";
 
 export const userRegisterService = async (data: UserRegisterInput) => {
   const redis = getRedisClient()
@@ -52,7 +53,6 @@ export const userRegisterService = async (data: UserRegisterInput) => {
     );
   }
 };
-
 
 export const sendOtpService = async ({
   email,
@@ -183,3 +183,15 @@ export const sendOtpService = async ({
 
   return successResponse(payload, "Otp send successfuly", 201);
 };
+
+export const userLoginService = async ({email,password,clientIp}:userloginServiceType)=>{
+
+}
+
+export const loginWithGoogleService = async ({email,password,otp,clientIp}:forgetPasswordServiceType)=>{
+
+}
+
+export const forgetPasswordService = async ({email,password,otp,clientIp}:forgetPasswordServiceType)=>{
+
+}
