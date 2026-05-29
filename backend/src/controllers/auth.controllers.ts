@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import {
   sendOtpService,
+  userLoginService,
   userRegisterService,
 } from "../services/auth.services.js";
 import { successResponse } from "../utils/responseHandler.js";
@@ -47,3 +48,13 @@ export const sendOtp = async (
     next(error);
   }
 };
+
+export const userLogin = async( 
+  req: Request,
+  res: Response,
+  next: NextFunction)=>{
+  const data = req.body
+  const response = await userLoginService(data)
+  res.json(201).json(response)
+
+}
