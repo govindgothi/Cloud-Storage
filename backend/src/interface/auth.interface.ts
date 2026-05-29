@@ -1,3 +1,6 @@
+import { clientIpParams, EmailParams, idParams, userIdParams } from "./common.interface.js";
+
+ 
 export interface IpParams {
   ip: string;
 }
@@ -12,13 +15,8 @@ export type GetUserParams = {
   fields: string[];
 };
 
-export type EmailParams = {
-  email: string;
-};
 
-export type AddOtpLogsModel = {
-  ip: string;
-  userId: number;
+export type AddOtpLogsModel = idParams & userIdParams & {
   otpHash: string;
 };
 
@@ -53,4 +51,12 @@ export type updateIpBlockType = {
 export type customIpRateLimitType ={
   ipKey:string,
   emailKey:string,
+}
+
+export type userloginServiceType = EmailParams & clientIpParams &{
+ password:string
+}
+export type forgetPasswordServiceType = EmailParams & clientIpParams & {
+  otp:number,
+  password:string
 }
