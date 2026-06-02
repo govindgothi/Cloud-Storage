@@ -18,18 +18,21 @@ export class ApiError extends Error {
   success: boolean;
   message: string;
   error: ErrorDetailsObject | null;
+  data: any
 
   constructor(
     message: string,
     statusCode: number,
     success: boolean,
     error: ErrorDetailsObject | null= null,
+    data:any = []
   ) {
     super(message);
     this.statusCode = statusCode || 500;
     this.success = success || false;
     this.message = message || "Something Went Wrong";
     this.error = error;
+    this.data = data
   }
 }
 
@@ -39,6 +42,7 @@ export const errorHandler = (
   res: Response,
   next: NextFunction,
 ) => {
+  console.log("errr-->", err);
   if (err instanceof ApiError) {
     console.log("errr-->", err);
     return res.status(err.statusCode).json({
@@ -49,6 +53,7 @@ export const errorHandler = (
         NODE_ENV != "production" ? err.message : "Internal server error",
         error: NODE_ENV != "production" ? err.error : null,
       },
+      data:err.data
     });
   }
 

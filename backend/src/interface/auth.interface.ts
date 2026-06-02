@@ -1,4 +1,4 @@
-import { clientIpParams, EmailParams, idParams, userIdParams } from "./common.interface.js";
+import { clientIpParams, EmailParams, idParams, sessionIdParams, tokenParams, userIdParams } from "./common.interface.js";
 
  
 export interface IpParams {
@@ -16,7 +16,7 @@ export type GetUserParams = {
 };
 
 
-export type AddOtpLogsModel = idParams & userIdParams & {
+export type AddOtpLogsModel = clientIpParams & EmailParams & {
   otpHash: string;
 };
 
@@ -60,3 +60,9 @@ export type forgetPasswordServiceType = EmailParams & clientIpParams & {
   otp:number,
   password:string
 }
+
+export type createSessionType = userIdParams & EmailParams & clientIpParams &  { }
+
+export type replaceSessionType = sessionIdParams & userIdParams & clientIpParams & { }
+
+export type successLoginResponseType = userIdParams & EmailParams & tokenParams & { }

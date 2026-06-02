@@ -1,7 +1,6 @@
 import { query } from "../db/mysql.db.js";
 import {
   AddOtpLogsModel,
-  EmailParams,
   IpParams,
   RegisterUserModel,
   updateEmailBlock,
@@ -11,6 +10,7 @@ import {
 import { ApiError } from "../utils/errorHandler.utils.js";
 import { success } from "zod";
 import { getRedisClient } from "../db/redis.db.js";
+import { EmailParams } from "../interface/common.interface.js";
 
 export const getBlockedIps = async ({ ip }: IpParams) => {
   const data = await query(
@@ -113,15 +113,14 @@ export const updateEmailBlockStatusModel = async ({
   return result;
 };
 
-export const addOtpLogsData = async ({ ip, userId, otpHash }: AddOtpLogsModel) => {
-  console.log({ ip, userId, otpHash })
+export const addOtpLogsData = async ({ clientIp, email, otpHash }: AddOtpLogsModel) => {
   const sql = `
   INSERT INTO otp_log (sender_id, ip, otp_hash, purpose, expires_at, attempts, verified)
   VALUES (?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 2 MINUTE), ?, ?)
 `;
   const data = await query(sql, [
-    userId ?? null,
-    ip,
+    0,
+    clientIp,
     otpHash,
     "register",
     0,

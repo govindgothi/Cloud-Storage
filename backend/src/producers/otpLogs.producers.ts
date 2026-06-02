@@ -1,11 +1,11 @@
 import { AddOtpLogsModel, updateEmailBlock, updateIpBlockType } from "../interface/auth.interface.js"
 import { otpQueue } from "../queues/queue.js"
 
-export const addOtpLogProducer = async({ ip, userId, otpHash }:AddOtpLogsModel)=>{
+export const addOtpLogProducer = async({ clientIp, email, otpHash }:AddOtpLogsModel)=>{
    await otpQueue.add(
     "add-otp-create-log",
     {
-      ip, userId, otpHash
+      clientIp, email, otpHash
     },
      {
       attempts: 3,

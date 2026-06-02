@@ -1,7 +1,7 @@
 import { query } from "../db/mysql.db.js"
 import { GetUserParams } from "../interface/auth.interface.js"
 
-export const getUsersDetailByEmail = async({fields,email,id}:GetUserParams)=>{
+export const getUsersDetailByEmail = async({fields=["id"],email,id}:GetUserParams)=>{
  const fieldsmap = fields.join(",")
  let que = `SELECT ${fieldsmap} FROM users WHERE `
  let params = []
