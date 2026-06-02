@@ -6,6 +6,34 @@ import {
 } from "../interface/common.interface.js";
 import { generateRandomUUId } from "./common.utils.js";
 import { ApiError } from "./errorHandler.utils.js";
+import { createToken, decodeToken } from "./jwtToken.utils.js";
+
+export const loginChallengeSession = async({userId,email,clientIp}:createSessionType)=>{
+  const client = getRedisClient();
+  const session = {
+    userId: userId,
+    email: email,
+    clientIp: clientIp,
+  };
+  const token = createToken(session,"3m")
+  console.log(`login_challenge:${userId}`)
+  await client.set(`login_challenge:${userId}`,token,{  EX: 180})
+  return token
+}
+
+export const getLoginChallengeUserData = async ({userId}:userIdParams)=>{
+  const client = getRedisClient();
+    console.log(`login_challenge:${userId}`)
+    console.log("userrId",userId)
+
+  const token = await client.get(`login_challenge:${userId}`)
+  if(!token){
+    throw new ApiError("Time limit expiry re-login again",400,false)
+  }
+  const isData:createSessionType = decodeToken(token)
+  return isData
+} 
+
 
 export const createSession = async ({
   userId,
@@ -14,13 +42,12 @@ export const createSession = async ({
 }: createSessionType) => {
   const client = getRedisClient();
   // session object
+  const sessionId = generateRandomUUId();
   const session = {
     userId: userId,
     email: email,
     clientIp: clientIp,
   };
-  const sessionId = generateRandomUUId();
-
   // store JSON session
   const sessionResult = await client.sendCommand([
     "JSON.SET",
@@ -28,12 +55,18 @@ export const createSession = async ({
     "$",
     JSON.stringify(session),
   ]);
+  await client.expire(`user:session:${sessionId}`, 60 * 60 * 24 * 7); 
 
   const sessionResult1 = await client.sAdd(
     `user:sessions:userId:${session.userId}`,
     sessionId,
   );
-  return sessionResult1;
+  await client.expire(`user:sessions:userId:${session.userId}`, 60 * 60 * 24 * 30); 
+  const token = createToken({...session,sessionId},"7d")
+  if(!token){
+    throw new ApiError("Error while creating session",400,false)
+  }
+  return token;
 };
 
 export const getCountOfSession = async ({ userId }: userIdParams) => {
@@ -60,18 +93,22 @@ export const deleteSessionBySessionId = async ({
   await client.sRem(`user:sessions:userId:${sessionData.userId}`, sessionId);
 };
 
-export const getUserSessions = async({userId}:userIdParams)=> {
+export const getUserSessions = async ({ userId }: userIdParams) => {
   const client = getRedisClient();
-  const sessionIds:string[] = await client.sMembers(
+
+  const sessionIds: string[] = await client.sMembers(
     `user:sessions:userId:${userId}`
   );
 
   if (!sessionIds.length) {
-    throw new ApiError("",404,false)
-  };
+    return {
+      sessionIds,
+      sessionsList: [],
+    };
+  }
 
   const sessions = await Promise.all(
-    sessionIds.map(id =>
+    sessionIds.map((id) =>
       client.sendCommand([
         "JSON.GET",
         `user:session:${id}`,
@@ -80,13 +117,21 @@ export const getUserSessions = async({userId}:userIdParams)=> {
   );
 
   const sessionsList = sessions
-    .filter(Boolean).filter((session) => typeof session === "string")
-    .map(session => JSON.parse(session));
+    .map((session, index) => {
+      if (!session || typeof session !== "string") return null;
+
+      return {
+        sessionId: sessionIds[index],
+        ...JSON.parse(session),
+      };
+    })
+    .filter(Boolean);
+
   return {
+    sessionIds,
     sessionsList,
-    sessionIds 
-  }
-}
+  };
+};
 
 export const deleteAllSessionByUserId = async ({ userId }: userIdParams) => {
   const client = getRedisClient();
@@ -109,4 +154,32 @@ export const deleteAllSessionByUserId = async ({ userId }: userIdParams) => {
 
   // Optional: remove the empty set itself
   await client.del(`user:sessions:userId:${userId}`);
+};
+
+export const deleteOldesSession = async ({ userId }: userIdParams) => {
+  const client = getRedisClient();
+
+  const { sessionsList } = await getUserSessions({ userId });
+
+  if (!sessionsList.length) {
+    throw new ApiError("Session not found",404,false)
+  }
+
+  const oldestSession = sessionsList.reduce((oldest, current) => {
+    return new Date(current.createdAt).getTime() <
+      new Date(oldest.createdAt).getTime()
+      ? current
+      : oldest;
+  });
+
+  const sessionId = oldestSession.sessionId;
+
+  await client.del(`user:session:${sessionId}`);
+
+  await client.sRem(
+    `user:sessions:userId:${userId}`,
+    sessionId
+  );
+
+  return oldestSession;
 };
