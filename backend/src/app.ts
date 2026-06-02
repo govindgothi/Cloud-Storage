@@ -6,17 +6,19 @@ import { errorHandler } from "./utils/errorHandler.utils.js";
 
 const app = express();
 export const NODE_ENV = process.env.NODE_ENV;
+export const isProduction = process.env.NODE_ENV == "development" ? true : false ;
 
 declare module "express-serve-static-core" {
   interface Request {
-    clientIp?: string;
+    clientIp: string;
+    user?:any
   }
 }
 
 app.use(express.json());
-app.use(cookieParser());
-
-//cors setup
+app.use(cookieParser("jdskjfkjdskjndskjnfksdnkjdk"));
+app.use(getClientIp)
+//cors setup  
 app.use(
   cors({
     origin: process.env.FRONTEND_URL,
@@ -42,6 +44,7 @@ app.get("/health", async(_, res:Response) => {
 // Import routes 
 import homeRouter from "./routes/home.routes.js"
 import userRouter from "./routes/auth.route.js"
+import getClientIp from "./middlewares/modifier/getIp.middleware.js";
 
 // Mount routes under base path "/api"
 app.use("/api/home",homeRouter)
