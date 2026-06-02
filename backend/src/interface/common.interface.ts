@@ -7,9 +7,17 @@ export type idParams = {
 }
 
 export type userIdParams ={
-  userId:string
+  userId:number
 }
 
 export type clientIpParams = {
   clientIp:string
+}
+
+export type sessionIdParams = {
+  sessionId: string
+}
+
+export type tokenParams = {
+  token:string
 }
