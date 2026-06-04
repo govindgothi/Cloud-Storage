@@ -89,8 +89,12 @@ export const deleteSessionBySessionId = async ({
 
   const sessionData = JSON.parse(session);
 
-  await client.del(`user:session:${sessionId}`);
-  await client.sRem(`user:sessions:userId:${sessionData.userId}`, sessionId);
+  const deletedSession = await client.del(`user:session:${sessionId}`);
+  const removedFromSet = await client.sRem(`user:sessions:userId:${sessionData.userId}`, sessionId);
+  if(deletedSession !== 1 && removedFromSet !== 1){
+    throw new ApiError("Your session is not founrd or Your arleady logout",200,false)
+  }
+  return true
 };
 
 export const getUserSessions = async ({ userId }: userIdParams) => {
@@ -153,7 +157,9 @@ export const deleteAllSessionByUserId = async ({ userId }: userIdParams) => {
   );
 
   // Optional: remove the empty set itself
-  await client.del(`user:sessions:userId:${userId}`);
+  const deleted = await client.del(`user:sessions:userId:${userId}`);
+  if(deleted == 1) return true
+  return false
 };
 
 export const deleteOldesSession = async ({ userId }: userIdParams) => {

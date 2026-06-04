@@ -14,10 +14,10 @@ import { getRedisClient } from "../db/redis.db.js";
 import { successResponse } from "../utils/responseHandler.js";
 import { addOtpLogProducer, updateEmailBlockStatusProducer, updateIpBlockStatusProducer } from "../producers/otpLogs.producers.js";
 import { hashValue, verifyHash } from "../utils/bcrypt.utils.js";
-import { forgetPasswordServiceType, replaceSessionType, successLoginResponseType, userloginServiceType } from "../interface/auth.interface.js";
+import { forgetPasswordServiceType, logoutParamsType, replaceSessionType, successLoginResponseType, userloginServiceType } from "../interface/auth.interface.js";
 import { createToken, decodeToken } from "../utils/jwtToken.utils.js";
-import { createSession, deleteSessionBySessionId, getLoginChallengeUserData, getUserSessions, loginChallengeSession } from "../utils/sessions.utils.js";
-import { sessionIdParams } from "../interface/common.interface.js";
+import { createSession, deleteAllSessionByUserId, deleteSessionBySessionId, getLoginChallengeUserData, getUserSessions, loginChallengeSession } from "../utils/sessions.utils.js";
+import { sessionIdParams, userIdParams } from "../interface/common.interface.js";
 import { success } from "zod";
 
 export const userRegisterService = async (data: UserRegisterInput) => {
@@ -268,4 +268,40 @@ export const replaceSessionService = async ({sessionId,userId,clientIp}:replaceS
     email,
     userId
   }, "User logged in Successfully",201)
+}
+
+
+export const logoutService = async ({userId,email,sessionId}:logoutParamsType)=>{
+  const deletedSession = await deleteSessionBySessionId({sessionId})
+  if(deletedSession == true){
+    return successResponse(null,"User logout succesfuly.",200)
+  }
+  throw new ApiError("Something went wrong while logout",400,false)
+}
+
+export const logoutFromAllDeviceService = async({userId}:userIdParams)=>{
+const deletedSessions = await deleteAllSessionByUserId({userId})
+if(deletedSessions == true){
+  return successResponse(null,"User logout from all device successfuly",200)
+}
+throw new ApiError("Something went wrong while logout user from all device",400,false)
+}
+
+export const logoutByAdminService = async({sessionId}:sessionIdParams)=>{
+  const deletedSession = await deleteSessionBySessionId({sessionId})
+  if(deletedSession == true){
+    return successResponse(null,"User logout succesfuly.",200)
+  }
+}
+
+export const logoutFromAllDeviceByAdminService = async ({userId}:userIdParams)=>{
+const deletedSessions = await deleteAllSessionByUserId({userId})
+if(deletedSessions == true){
+  return successResponse(null,"User logout from all device successfuly",200)
+}
+throw new ApiError("Something went wrong while logout user from all device",400,false)
+}
+
+export const listOfAllLoginUsersService = async ()=>{
+
 }

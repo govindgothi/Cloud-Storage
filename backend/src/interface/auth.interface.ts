@@ -66,3 +66,5 @@ export type createSessionType = userIdParams & EmailParams & clientIpParams &  {
 export type replaceSessionType = sessionIdParams & userIdParams & clientIpParams & { }
 
 export type successLoginResponseType = userIdParams & EmailParams & tokenParams & { }
+
+export type logoutParamsType = userIdParams & EmailParams & sessionIdParams & { }
