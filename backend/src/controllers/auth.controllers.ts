@@ -55,7 +55,6 @@ export const sendOtp = async (
         secure: true,
         sameSite: "none",
         path: "/",
-        // sameSite: isProduction ? "none" : "lax",
       });
       return res.status(response.statusCode).json(response);
     } else {
@@ -82,19 +81,20 @@ export const userLogin = async (
   try {
     const data = req.body;
     const response = await userLoginService(data);
-    if (!response.success) {
+    if (!response.success && response.token) {
       const { success, statusCode, data, token, message } = response;
       res.cookie("login-sid", token, {
         signed: true,
         httpOnly: true,
         secure: true,
-        sameSite: "none",
+        sameSite: "none", 
         path: "/",
       });
       throw new ApiError(message || "", statusCode, success, null, data);
     }
-    if (response.success) {
-      res.cookie("sid", response.token, {
+    if (response.success && response.user) {
+      const { token } = response.user;
+      res.cookie("sid", token, {
         signed: true,
         httpOnly: true,
         secure: true,
@@ -128,9 +128,11 @@ export const replaceSession = async (
     });
     if (response.success) {
       res.cookie("sid", response.data.token, {
+        signed: true,
         httpOnly: true,
-        secure: isProduction,
-        sameSite: isProduction ? "none" : "lax",
+        secure: true,
+        sameSite: "none",
+        path: "/",
       });
       return res.status(response.statusCode).json(response);
     }

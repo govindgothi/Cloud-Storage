@@ -1,6 +1,6 @@
 import { Worker, Job } from "bullmq";
 import {connection} from "../db/bullmq.js"
-import { addOtpLogsData, updateEmailBlockStatusModel, updateIpBlockStatusModel } from "../models/auth.models.js";
+import { addOtpLogsData, insertBlockedEmail, insertBlockedIp, updateEmailBlockStatusModel, updateIpBlockStatusModel } from "../models/auth.models.js";
 
 import { initDB } from "../db/mysql.db.js";
 await initDB({
@@ -24,6 +24,12 @@ const worker = new Worker(
 
       case "update-ip-block":
         const updateIpData = await updateIpBlockStatusModel(job.data)
+
+      case "insert-email":
+        const emaildata = await insertBlockedEmail(job.data);
+      
+      case "insert-ip":
+        const ipdata = await insertBlockedIp(job.data)
     }
 
     return {

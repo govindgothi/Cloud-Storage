@@ -47,8 +47,8 @@ import userRouter from "./routes/auth.route.js"
 import getClientIp from "./middlewares/modifier/getIp.middleware.js";
 
 // Mount routes under base path "/api"
-app.use("/api/home",homeRouter)
-app.use("/api/user",userRouter)
+app.use("/api/v1/home",homeRouter)
+app.use("/api/v1/auth",userRouter)
 
 // Global error handler
 app.use(errorHandler);

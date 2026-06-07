@@ -12,8 +12,8 @@ const getClientIp = (req:Request, _res: Response, next: NextFunction) => {
   if (typeof ip === 'string' && ip.includes(',')) {
     ip = ip.split(',')[0].trim();
   }
-
-  req.body.clientIp = ip;
+  console.log("ip",ip)
+  req.clientIp = "ip";
   next();
 };
 

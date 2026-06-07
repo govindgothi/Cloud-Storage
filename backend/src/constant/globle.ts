@@ -29,3 +29,5 @@ export const HttpMessage = {
   // 5xx
   INTERNAL_SERVER_ERROR: "Internal server error",
 };
+
+export const DAY = 24 * 60 * 60; // seconds

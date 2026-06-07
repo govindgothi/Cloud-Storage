@@ -8,32 +8,33 @@ import { generateRandomUUId } from "./common.utils.js";
 import { ApiError } from "./errorHandler.utils.js";
 import { createToken, decodeToken } from "./jwtToken.utils.js";
 
-export const loginChallengeSession = async({userId,email,clientIp}:createSessionType)=>{
+export const loginChallengeSession = async ({
+  userId,
+  email,
+  clientIp,
+}: createSessionType) => {
   const client = getRedisClient();
   const session = {
     userId: userId,
     email: email,
     clientIp: clientIp,
   };
-  const token = createToken(session,"3m")
-  console.log(`login_challenge:${userId}`)
-  await client.set(`login_challenge:${userId}`,token,{  EX: 180})
-  return token
-}
+  const token = createToken(session, "3m");
+  console.log(`login_challenge:${userId}`);
+  await client.set(`login_challenge:${userId}`, token, { EX: 180 });
+  return token;
+};
 
-export const getLoginChallengeUserData = async ({userId}:userIdParams)=>{
+export const getLoginChallengeUserData = async ({ userId }: userIdParams) => {
   const client = getRedisClient();
-    console.log(`login_challenge:${userId}`)
-    console.log("userrId",userId)
 
-  const token = await client.get(`login_challenge:${userId}`)
-  if(!token){
-    throw new ApiError("Time limit expiry re-login again",400,false)
+  const token = await client.get(`login_challenge:${userId}`);
+  if (!token) {
+    throw new ApiError("Time limit expiry re-login again", 400, false);
   }
-  const isData:createSessionType = decodeToken(token)
-  return isData
-} 
-
+  const isData: createSessionType = decodeToken(token);
+  return isData;
+};
 
 export const createSession = async ({
   userId,
@@ -55,16 +56,19 @@ export const createSession = async ({
     "$",
     JSON.stringify(session),
   ]);
-  await client.expire(`user:session:${sessionId}`, 60 * 60 * 24 * 7); 
+  await client.expire(`user:session:${sessionId}`, 60 * 60 * 24 * 7);
 
   const sessionResult1 = await client.sAdd(
     `user:sessions:userId:${session.userId}`,
     sessionId,
   );
-  await client.expire(`user:sessions:userId:${session.userId}`, 60 * 60 * 24 * 30); 
-  const token = createToken({...session,sessionId},"7d")
-  if(!token){
-    throw new ApiError("Error while creating session",400,false)
+  await client.expire(
+    `user:sessions:userId:${session.userId}`,
+    60 * 60 * 24 * 30,
+  );
+  const token = createToken({ ...session, sessionId }, "7d");
+  if (!token) {
+    throw new ApiError("Error while creating session", 400, false);
   }
   return token;
 };
@@ -72,7 +76,7 @@ export const createSession = async ({
 export const getCountOfSession = async ({ userId }: userIdParams) => {
   const client = getRedisClient();
   const count = await client.sCard(`user:sessions:userId:${userId}`);
-  return count
+  return count;
 };
 
 export const deleteSessionBySessionId = async ({
@@ -90,18 +94,25 @@ export const deleteSessionBySessionId = async ({
   const sessionData = JSON.parse(session);
 
   const deletedSession = await client.del(`user:session:${sessionId}`);
-  const removedFromSet = await client.sRem(`user:sessions:userId:${sessionData.userId}`, sessionId);
-  if(deletedSession !== 1 && removedFromSet !== 1){
-    throw new ApiError("Your session is not founrd or Your arleady logout",200,false)
+  const removedFromSet = await client.sRem(
+    `user:sessions:userId:${sessionData.userId}`,
+    sessionId,
+  );
+  if (deletedSession !== 1 && removedFromSet !== 1) {
+    throw new ApiError(
+      "Your session is not founrd or Your arleady logout",
+      200,
+      false,
+    );
   }
-  return true
+  return true;
 };
 
 export const getUserSessions = async ({ userId }: userIdParams) => {
   const client = getRedisClient();
 
   const sessionIds: string[] = await client.sMembers(
-    `user:sessions:userId:${userId}`
+    `user:sessions:userId:${userId}`,
   );
 
   if (!sessionIds.length) {
@@ -113,11 +124,8 @@ export const getUserSessions = async ({ userId }: userIdParams) => {
 
   const sessions = await Promise.all(
     sessionIds.map((id) =>
-      client.sendCommand([
-        "JSON.GET",
-        `user:session:${id}`,
-      ])
-    )
+      client.sendCommand(["JSON.GET", `user:session:${id}`]),
+    ),
   );
 
   const sessionsList = sessions
@@ -143,23 +151,17 @@ export const deleteAllSessionByUserId = async ({ userId }: userIdParams) => {
   const { sessionIds } = await getUserSessions({ userId });
 
   if (!sessionIds.length) {
-    throw new  ApiError("sessions not found",404,false)
+    throw new ApiError("sessions not found", 404, false);
   }
 
-  await Promise.all(
-    sessionIds.map(async (sessionId:string) => {
-      await client.del(`user:session:${sessionId}`);
-      await client.sRem(
-        `user:sessions:userId:${userId}`,
-        sessionId
-      );
-    })
-  );
+  sessionIds.map(async (sessionId: string) => {
+    await client.del(`user:session:${sessionId}`);
+  });
 
   // Optional: remove the empty set itself
   const deleted = await client.del(`user:sessions:userId:${userId}`);
-  if(deleted == 1) return true
-  return false
+  if (deleted == 1) return true;
+  return false;
 };
 
 export const deleteOldesSession = async ({ userId }: userIdParams) => {
@@ -168,7 +170,7 @@ export const deleteOldesSession = async ({ userId }: userIdParams) => {
   const { sessionsList } = await getUserSessions({ userId });
 
   if (!sessionsList.length) {
-    throw new ApiError("Session not found",404,false)
+    throw new ApiError("Session not found", 404, false);
   }
 
   const oldestSession = sessionsList.reduce((oldest, current) => {
@@ -182,10 +184,7 @@ export const deleteOldesSession = async ({ userId }: userIdParams) => {
 
   await client.del(`user:session:${sessionId}`);
 
-  await client.sRem(
-    `user:sessions:userId:${userId}`,
-    sessionId
-  );
+  await client.sRem(`user:sessions:userId:${userId}`, sessionId);
 
   return oldestSession;
 };

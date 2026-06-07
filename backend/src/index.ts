@@ -1,15 +1,23 @@
 import app from "./app.js";
-import { initDB } from "./db/mysql.db.js";
+import { initDB } from "./db/postgresSql.js";
+// import { initDB } from "./db/mysql.db.js";
 import { connectRedis } from "./db/redis.db.js";
-
 
 async function start() {
   try {
+    // initDB({
+    //   host: "localhost",
+    //   user: "root",
+    //   password: "",
+    //   database: "cloud-storage",
+    // });
     initDB({
       host: "localhost",
-      user: "root",
-      password: "",
-      database: "cloud-storage",
+      port: 5432,
+      user: "postgres", // replace if your PostgreSQL username is different
+      password: "govind@123",
+      database: "cloudstorage",
+      connectionLimit: 10,
     });
     await connectRedis();
 
