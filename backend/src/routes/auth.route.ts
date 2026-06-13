@@ -6,6 +6,7 @@ import getClientIp from "../middlewares/modifier/getIp.middleware.js";
 import { validateOtpSession } from "../middlewares/modifier/validateOtpSession.middleware.js";
 import { validateChallengeSession } from "../middlewares/modifier/validateLoginChallenge.middleware.js";
 import { validateAuthSession } from "../middlewares/modifier/verifyAuth.middleware.js";
+import { authorizeRoles } from "../middlewares/modifier/roleAuth.middleware.js";
 
 const router = Router() 
 
@@ -37,7 +38,7 @@ router.post("/logout/all-devices", validateAuthSession, logoutFromAllDevice);
 
 router.post("/admin/logout/session", logoutByAdmin);
 
-router.post("/admin/logout/all-devices", logoutFromAllDeviceByAdmin);
+router.post("/admin/logout/all-devices/:userId", validateAuthSession, authorizeRoles("admin","super_admin"), logoutFromAllDeviceByAdmin);
 
 router.get("/admin/logged-in-users", listOfAllLoginUsers);
 

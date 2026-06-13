@@ -44,7 +44,7 @@ import { redisKeys } from "../constant/redisKey.js";
 export const userRegisterService = async (data: UserRegisterInput) => {
   /** Access the Redis instance to store temporary OTP verification tokens and otp  */
   const redis = getRedisClient();
-  const { username, email, password, otp } = data;
+  const { username, email, password, otp, roleId } = data;
   /** Create profile url*/ 
   const profileUrl = getProfileUrl(username);
   /** Array of field, we want from database*/ 
@@ -85,6 +85,7 @@ export const userRegisterService = async (data: UserRegisterInput) => {
     username,
     email,
     password: hashPassword,
+    roleId,
     profileUrl,
   });
   /** Return success payload to controller after user succefuly register*/ 
@@ -280,7 +281,7 @@ export const userLoginService = async ({
   clientIp,
 }: userloginServiceType) => {
   /** field we want from users*/ 
-  let fields = ["id", "email", "password", "created_at"];
+  let fields = ["id", "email", "password", "role_id", "created_at"];
   /** get user data from user table */ 
   const userData = await getUsersDetailByEmail({ fields, email });
   
@@ -296,12 +297,13 @@ export const userLoginService = async ({
     throw new ApiError("Invalide Credential", 404, false);
   }
   const userId = userData[0].id;
+  const roleId = userData[0].id;
   /** Get session store by userid or we can list sessions of user*/
   const { sessionsList, sessionIds } = await getUserSessions({ userId });
   /** Check session list length and add condition if lenth is greater then 2*/ 
   if (sessionIds.length === 2) {
   /** create token  and session for login challenge*/
-    const token = await loginChallengeSession({ userId, email, clientIp });
+    const token = await loginChallengeSession({ userId, email, clientIp, roleId});
     /** return session list with token so user can logout or remove one session and login*/ 
     return {
       message:
@@ -313,7 +315,7 @@ export const userLoginService = async ({
     };
   }
   /** create login session and token*/
-  const token = await createSession({ userId, email, clientIp });
+  const token = await createSession({ userId, email, clientIp, roleId });
   /** returm token for add in cookie, email and userId for localstorage*/ 
   return {
     user: { token: token, email: email, userId: userId },
@@ -343,12 +345,12 @@ export const replaceSessionService = async ({
 }: replaceSessionType) => {
   // get challenge login user data
   const loginUserData = await getLoginChallengeUserData({ userId });
-  let email = loginUserData.email;
+  let {email,roleId} = loginUserData;
   /** Delete session give by user using session Id  */
   const deletedSession = await deleteSessionBySessionId({ sessionId });
 
   /** Create new session and return token */
-  const token = await createSession({ userId, email, clientIp });
+  const token = await createSession({ userId, email, clientIp, roleId });
   /**Return success payload */ 
   return successResponse(
     {
@@ -378,7 +380,6 @@ export const logoutService = async ({
 
 export const logoutFromAllDeviceService = async ({ userId }: userIdParams) => {
   const deletedSessions = await deleteAllSessionByUserId({ userId });
-  console.log("deleted",deletedSessions)
   if (deletedSessions == true) {
     return successResponse(
       null,

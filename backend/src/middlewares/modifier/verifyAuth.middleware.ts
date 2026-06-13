@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { ApiError } from "../../utils/errorHandler.utils.js";
 import { decodeToken } from "../../utils/jwtToken.utils.js";
 import { getRedisClient } from "../../db/redis.db.js";
+import { userIdParams } from "../../interface/common.interface.js";
 
 
 const guestOnlyRoutes = [
@@ -25,12 +26,10 @@ export const validateAuthSession = async (
     if (authHeader?.startsWith("Bearer ")) {
       token = authHeader.split(" ")[1];
     }
-    console.log("All Signed Cookies:", req.signedCookies);
     // Fallback to signed cookie
     if (!token) {
       token = req.signedCookies["sid"];
     }
-    console.log("token",token)
     if (!token) {
       throw new ApiError("Authentication token is required", 401, false);
     }

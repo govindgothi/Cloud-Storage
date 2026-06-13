@@ -3,6 +3,7 @@ import {
   emailSchema,
   otpSchema,
   passwordSchema,
+  roleId,
   urlSchema,
   usernameSchema,
 } from "./common/common.validations.js";
@@ -32,6 +33,7 @@ export const userRegisterSchema = z
     email: emailSchema,
     password: passwordSchema,
     confirmPassword: passwordSchema,
+    roleId:roleId,
     otp: otpSchema,
   })
   .refine((data) => data.password === data.confirmPassword, {

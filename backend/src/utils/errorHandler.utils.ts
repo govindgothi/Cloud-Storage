@@ -42,7 +42,6 @@ export const errorHandler = (
   res: Response,
   next: NextFunction,
 ) => {
-  console.log("errr-->", err);
   if (err instanceof ApiError) {
     console.log("errr-->", err);
     return res.status(err.statusCode).json({

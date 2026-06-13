@@ -413,6 +413,7 @@ export const registerQuery = async ({
   username,
   email,
   password,
+  roleId,
   profileUrl,
 }: RegisterUserModel) => {
   const data = await query(
@@ -421,12 +422,13 @@ export const registerQuery = async ({
       username,
       email,
       password,
+      role_id,
       profile_url
     )
-    VALUES ($1, $2, $3, $4)
+    VALUES ($1, $2, $3, $4,$5)
     RETURNING id
     `,
-    [username, email, password, profileUrl]
+    [username, email, password,roleId, profileUrl]
   );
 
   return data;

@@ -218,21 +218,21 @@ export const logoutByAdmin = async (
 };
 // logout from all device by admin
 export const logoutFromAllDeviceByAdmin = async (
-  req: Request<userIdParams>,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) => {
    try {
-    const { userId } = req.params;
+    const userId = Number(req.params.userId);    
     const response = await logoutFromAllDeviceByAdminService({ userId });
     if (response?.success) {
-      res.cookie("sid", "", {
-        signed: true,
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        path: "/",
-      });
+      // res.cookie("sid", "", {
+      //   signed: true,
+      //   httpOnly: true,
+      //   secure: true,
+      //   sameSite: "none",
+      //   path: "/",
+      // });
       return res.status(response.statusCode).json(response);
     }
     return res.status(404).json({ success: false, message: "Data Not found" });

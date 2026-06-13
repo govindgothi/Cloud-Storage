@@ -22,3 +22,8 @@ export const redisKeys = {
   /** Session tracking (if needed for login/session replacement later) */
   userSession: (userId: string) => `session:user:${userId}`,
 };
+
+export const redisRolesKey = {
+  redisRoleName: (role:string) =>  `roles:role:${role}`,
+  redisRoleId: (id:number) =>  `roles:id:${id}`
+}

@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { query } from "./db/mysql.db.js";
 import { errorHandler } from "./utils/errorHandler.utils.js";
+import getClientIp from "./middlewares/modifier/getIp.middleware.js";
 
 const app = express();
 export const NODE_ENV = process.env.NODE_ENV;
@@ -44,11 +45,12 @@ app.get("/health", async(_, res:Response) => {
 // Import routes 
 import homeRouter from "./routes/home.routes.js"
 import userRouter from "./routes/auth.route.js"
-import getClientIp from "./middlewares/modifier/getIp.middleware.js";
+import maintenanceRouter from "./routes/maintenance.route.js"
 
 // Mount routes under base path "/api"
 app.use("/api/v1/home",homeRouter)
 app.use("/api/v1/auth",userRouter)
+app.use('/api/v1/maintenance',maintenanceRouter)
 
 // Global error handler
 app.use(errorHandler);

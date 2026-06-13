@@ -21,3 +21,7 @@ export type sessionIdParams = {
 export type tokenParams = {
   token:string
 }
+
+export type roleIdParams = {
+   roleId:number
+}

@@ -20,6 +20,5 @@ export const addEmailJob = async({to,subject,body}:MailBodyProducer)=> {
     }
   );
 
-  console.log("Job added");
 }
 

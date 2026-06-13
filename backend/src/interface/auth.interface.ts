@@ -1,4 +1,4 @@
-import { clientIpParams, EmailParams, idParams, sessionIdParams, tokenParams, userIdParams } from "./common.interface.js";
+import { clientIpParams, EmailParams, idParams, roleIdParams, sessionIdParams, tokenParams, userIdParams } from "./common.interface.js";
 
  
 export interface IpParams {
@@ -29,6 +29,7 @@ export type RegisterUserModel = {
   username: string;
   email: string;
   password: string;
+  roleId:number;
   profileUrl?: string;
 };
 
@@ -61,7 +62,7 @@ export type forgetPasswordServiceType = EmailParams & clientIpParams & {
   password:string
 }
 
-export type createSessionType = userIdParams & EmailParams & clientIpParams &  { }
+export type createSessionType = userIdParams & EmailParams & clientIpParams & roleIdParams & { }
 
 export type replaceSessionType = sessionIdParams & userIdParams & clientIpParams & { }
 

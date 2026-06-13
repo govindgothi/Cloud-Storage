@@ -49,3 +49,15 @@ export const getUsersDetailByEmail = async ({
 
   return data;
 };
+
+export const getAllRoles = async()=>{
+     const result = await query(`
+      SELECT
+        id,
+        role,
+        display_role
+      FROM roles
+      WHERE deleted = false
+    `);
+    return result
+}

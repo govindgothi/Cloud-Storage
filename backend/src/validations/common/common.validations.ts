@@ -34,3 +34,8 @@ export const urlSchema = z
     (url) => url.startsWith("http://") || url.startsWith("https://"),
     "URL must start with http or https"
   );
+
+export const roleId = z
+  .number()
+  .int("Role ID must be an integer")
+  .positive("Role ID must be positive");

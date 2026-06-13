@@ -12,15 +12,16 @@ export const loginChallengeSession = async ({
   userId,
   email,
   clientIp,
+  roleId // no need in this 
 }: createSessionType) => {
   const client = getRedisClient();
   const session = {
     userId: userId,
     email: email,
     clientIp: clientIp,
+    roleId,
   };
   const token = createToken(session, "3m");
-  console.log(`login_challenge:${userId}`);
   await client.set(`login_challenge:${userId}`, token, { EX: 180 });
   return token;
 };
@@ -40,6 +41,7 @@ export const createSession = async ({
   userId,
   email,
   clientIp,
+  roleId
 }: createSessionType) => {
   const client = getRedisClient();
   // session object
@@ -48,6 +50,7 @@ export const createSession = async ({
     userId: userId,
     email: email,
     clientIp: clientIp,
+    roleId
   };
   // store JSON session
   const sessionResult = await client.sendCommand([

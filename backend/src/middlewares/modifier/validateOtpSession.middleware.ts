@@ -15,7 +15,6 @@ export const validateOtpSession = async (
 ) => {
   try {
     const authHeader = req.headers.authorization;
-    console.log("req.headers",req.headers)
     let token: string | undefined;
 
     // Authorization: Bearer <token>
@@ -27,7 +26,6 @@ export const validateOtpSession = async (
     if (!token) {
       token = req.signedCookies["otp-sid"];
     }
-     console.log(token)
     if (!token) {
       throw new ApiError("Session token is required", 401, false);
     }
