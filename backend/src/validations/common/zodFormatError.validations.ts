@@ -8,7 +8,15 @@ export const formatZodError = (error: ZodError) => {
 
     // only take first error per field
     if (!formatted[field]) {
-      formatted[field] = err.message
+      console.log(field);
+      if (
+        err.code === "invalid_type" &&
+        err.message.includes("received undefined")
+      ) {
+        formatted[field] = `${field} is required`;
+      } else {
+        formatted[field] = err.message;
+      }
     }
   });
 

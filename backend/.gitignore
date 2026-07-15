@@ -87,3 +87,5 @@ public/uploads/
 *.zip
 *.tar
 *.gz
+
+schemas/

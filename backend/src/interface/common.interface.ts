@@ -3,7 +3,7 @@ export type EmailParams = {
 };
 
 export type idParams = {
-  id:string
+  id:number
 }
 
 export type userIdParams ={
@@ -24,4 +24,22 @@ export type tokenParams = {
 
 export type roleIdParams = {
    roleId:number
+}
+
+
+// direcotries interface
+export interface parentIdParams {
+  parentId: number | null;
+}
+
+export interface nameParams {
+  name:string;
+}
+
+export interface deletedParams {
+  is_deleted?:boolean
+}
+
+export interface statusParams {
+  is_status?:boolean
 }

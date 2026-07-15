@@ -433,3 +433,4 @@ export const registerQuery = async ({
 
   return data;
 };
+  

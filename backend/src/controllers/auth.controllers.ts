@@ -16,7 +16,6 @@ import {
   sessionIdParams,
   userIdParams,
 } from "../interface/common.interface.js";
-import { success } from "zod";
 
 export const userRegister = async (
   req: Request,

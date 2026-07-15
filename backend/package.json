@@ -18,6 +18,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1079.0",
+    "@aws-sdk/s3-request-presigner": "^3.1079.0",
     "bcrypt": "^6.0.0",
     "bullmq": "^5.76.6",
     "concurrently": "^9.2.1",

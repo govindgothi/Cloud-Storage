@@ -27,6 +27,19 @@ app.use(
   })
 );
 
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  if (err instanceof SyntaxError && "body" in err) {
+    return res.status(400).json({
+      success: false,
+      errors: {
+        body: "Invalid JSON format.",
+      },
+    });
+  }
+
+  next(err);
+});
+
 interface User {
     id:number,
     email:number,
@@ -46,11 +59,13 @@ app.get("/health", async(_, res:Response) => {
 import homeRouter from "./routes/home.routes.js"
 import userRouter from "./routes/auth.route.js"
 import maintenanceRouter from "./routes/maintenance.route.js"
+import directoryRouter from "./routes/directory.route.js"
 
 // Mount routes under base path "/api"
 app.use("/api/v1/home",homeRouter)
 app.use("/api/v1/auth",userRouter)
 app.use('/api/v1/maintenance',maintenanceRouter)
+app.use("/api/v1/directory",directoryRouter)
 
 // Global error handler
 app.use(errorHandler);

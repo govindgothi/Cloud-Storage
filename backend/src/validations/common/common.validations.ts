@@ -39,3 +39,5 @@ export const roleId = z
   .number()
   .int("Role ID must be an integer")
   .positive("Role ID must be positive");
+
+export const parentId= z.number().int().nullable();
