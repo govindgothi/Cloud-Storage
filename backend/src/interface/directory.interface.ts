@@ -8,7 +8,7 @@ export type CreateDirectoryQueryPayloadType = CreateDirectoryPayloadType & {
   depth: number;
 }
 
-export type directoryIds = idParams & userIdParams & statusParams  & deletedParams & {}
+export interface directoryIds extends idParams , userIdParams , statusParams  , deletedParams  {}
 
 export type directoryParentId = parentIdParams & userIdParams & statusParams  & deletedParams & {}
 

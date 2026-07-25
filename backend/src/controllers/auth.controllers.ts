@@ -11,10 +11,8 @@ import {
 } from "../services/auth.services.js";
 import { HttpMessage, HttpStatus } from "../constant/globle.js";
 import { ApiError } from "../utils/errorHandler.utils.js";
-import { isProduction } from "../app.js";
 import {
   sessionIdParams,
-  userIdParams,
 } from "../interface/common.interface.js";
 
 export const userRegister = async (
@@ -23,8 +21,10 @@ export const userRegister = async (
   next: NextFunction,
 ) => {
   try {
-    const data = req.body;
-    const response = await userRegisterService(data);
+    const { username, email, password, otp, roleId } = req.body;
+
+    const response = await userRegisterService({ username, email, password, otp, roleId});
+
     if (response?.success) {
       return res.status(response.statusCode).json(response);
     } else {
@@ -45,6 +45,7 @@ export const sendOtp = async (
   next: NextFunction,
 ) => {
   try {
+    
     const payloads = req.body;
     const response = await sendOtpService(payloads);
     if (response.success) {
@@ -80,6 +81,7 @@ export const userLogin = async (
   try {
     const data = req.body;
     const response = await userLoginService(data);
+    console.log(response)
     if (!response.success && response.token) {
       const { success, statusCode, data, token, message } = response;
       res.cookie("login-sid", token, {

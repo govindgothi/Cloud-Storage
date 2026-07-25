@@ -1,28 +1,67 @@
-export type EmailParams = {
-  email: string;
-};
+export interface Email {
+  email:string
+}
 
-export type idParams = {
+export interface Id {
   id:number
 }
 
-export type userIdParams ={
+export interface UserId {
+  userId:string
+}
+
+export interface SessionId {
+  sessionId:string
+}
+
+export interface Ip {
+  ip:string
+}
+
+export interface RoleId {
+  roleId:string
+}
+
+export interface ParentId {
+  parentId:number;
+}
+
+export interface IsDeleted {
+  isDeleted:boolean;
+}
+
+export interface Status {
+  Status:boolean;
+}
+
+
+
+
+export interface EmailParams {
+  email: string;
+};
+
+export interface idParams {
+  id:number
+}
+
+export interface userIdParams{
   userId:number
 }
 
-export type clientIpParams = {
+export interface clientIpParams {
   clientIp:string
 }
 
-export type sessionIdParams = {
+export interface sessionIdParams {
   sessionId: string
 }
 
-export type tokenParams = {
+export interface tokenParams {
   token:string
 }
 
-export type roleIdParams = {
+export interface roleIdParams {
    roleId:number
 }
 

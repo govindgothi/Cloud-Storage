@@ -1,12 +1,17 @@
+import { number } from "zod";
 import { transaction } from "../db/postgresSql.js";
 import { CreateDirectoryPayloadType, directoryIds, directoryNameIds, directoryParentId } from "../interface/directory.interface.js";
 import {
   createDirectoryQuery,
+  deleteAllChildrensAndCurrentDirectories,
   deleteDirectoryQuery,
   getAllDirectoriesByParentId,
   getDirectoryByIdQuery,
-  updateDirectoryNameQuery
+  updateAncestorDirectorySizeQuery,
+  updateDirectoryNameQuery,
+  updateParentDirectorySize
 } from "../models/directory.models.js";
+import { getAllAffectedFileDetail } from "../models/file.models.js";
 import { ApiError } from "../utils/errorHandler.utils.js";
 import { successResponse } from "../utils/responseHandler.js";
 
@@ -61,14 +66,19 @@ export const getDirectoriesService = async ({userId,parentId}:directoryParentId)
 export const deleteDiretoriesService = async ({userId,id}:directoryIds) =>{
    const dir = await getDirectoryByIdQuery({id,userId})
    console.log("dir",dir)
-
+   if(!dir || dir.length == 0){
+    throw new ApiError("Directory not found",404,false)
+   }
+   // all set in parent dir of deleting directories
+   let parentId = dir[0].parent_id
+   const affectFileDetail = await getAllAffectedFileDetail({id:dir[0].id, userId})
+   let {total_size,directory_ids} = affectFileDetail[0]
+   let ids = directory_ids?.filter((id:number) => {id !== parentId})
+   
+   const {} = affectFileDetail
    const result = await transaction(async (conn) => {
-     await deleteDirectoryQuery(conn, id);
-
-     return {
-       deleted: true,
-       id,
-     };
+     await  deleteAllChildrensAndCurrentDirectories(conn,ids,userId);
+     await  updateParentDirectorySize(conn,parentId,userId,total_size)
    });
 
   return successResponse(id,"Directory deleted successfully",201)

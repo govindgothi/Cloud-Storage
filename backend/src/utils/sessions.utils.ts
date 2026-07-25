@@ -18,7 +18,7 @@ export const loginChallengeSession = async ({
   const session = {
     userId: userId,
     email: email,
-    clientIp: clientIp,
+    // clientIp: clientIp,
     roleId,
   };
   const token = createToken(session, "3m");
@@ -29,7 +29,8 @@ export const loginChallengeSession = async ({
 export const getLoginChallengeUserData = async ({ userId }: userIdParams) => {
   const client = getRedisClient();
 
-  const token = await client.get(`login_challenge:${userId}`);
+  const token = await client.get(`login_challenge:${Number(userId)}`);
+  console.log("token",token)
   if (!token) {
     throw new ApiError("Time limit expiry re-login again", 400, false);
   }
@@ -86,10 +87,12 @@ export const deleteSessionBySessionId = async ({
   sessionId,
 }: sessionIdParams) => {
   const client = getRedisClient();
+  console.log("sessionId",sessionId)
   const session = await client.sendCommand([
     "JSON.GET",
     `user:session:${sessionId}`,
   ]);
+  console.log("session",session)
   if (session == null || typeof session !== "string") {
     throw new ApiError("session not found", 404, false);
   }

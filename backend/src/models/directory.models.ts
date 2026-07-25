@@ -91,11 +91,12 @@ export const deleteDirectoryQuery = async (
 ): Promise<void> => {
   await conn.query(
     `
-    WITH affected AS (
-      SELECT id
-      FROM directories
-      WHERE id = $1
-         OR $1 = ANY(ancestor_ids)
+    updated_files AS (
+      UPDATE files
+      SET
+        is_deleted = TRUE,
+        deleted_at = NOW()
+      WHERE directory_id IN (SELECT id FROM affected)
     )
     UPDATE directories
     SET
@@ -104,15 +105,7 @@ export const deleteDirectoryQuery = async (
     WHERE id IN (SELECT id FROM affected);
     `,
     [id]
-  );
-  /*   updated_files AS (
-      UPDATE files
-      SET
-        is_deleted = TRUE,
-        deleted_at = NOW()
-      WHERE directory_id IN (SELECT id FROM affected)
-    )
-    */ 
+  ); 
 };
 
 export const updateDirectoryNameQuery = async ({userId,id,name}:directoryNameIds) =>{
@@ -128,3 +121,69 @@ export const updateDirectoryNameQuery = async ({userId,id,name}:directoryNameIds
  const data = await query(que, params);
  return data;
 }
+
+
+export const updateAncestorDirectorySizeQuery = async (
+  conn: PoolClient,
+  parentAncestorIds: number[] | null,
+  size: number,
+  operation: "add" | "subtract",
+  userId: number
+) => {
+  if (parentAncestorIds == null || parentAncestorIds.length === 0) return;
+
+  const operator = operation === "add" ? "+" : "-";
+  console.log("operato",operator)
+  const que = `
+    UPDATE directories
+    SET total_size_bytes = total_size_bytes ${operator} $1
+    WHERE id = ANY($2::int[])
+      AND user_id = $3
+  `;
+  console.log(que,parentAncestorIds)
+  const result = await conn.query(que, [size, parentAncestorIds, userId]);
+  return result
+};
+
+
+
+export const deleteAllChildrensAndCurrentDirectories = async (
+  conn: PoolClient,
+  ids: string,
+  userId:number
+): Promise<void> => {
+  await conn.query(
+    `
+    WITH updated_files AS (
+      UPDATE files
+      SET
+        is_deleted = TRUE,
+        deleted_at = NOW()
+      WHERE parent_id = ANY(string_to_array($1, ',')::BIGINT[]) AND user_id = $2
+    )
+    UPDATE directories
+    SET
+      is_deleted = TRUE,
+      deleted_at = NOW()
+    WHERE id = ANY(string_to_array($1, ',')::BIGINT[]) AND user_id = $2;
+    `,
+    [ids,userId]
+  );
+};
+
+export const updateParentDirectorySize = async (
+  conn: PoolClient,
+  directoryId: number,
+  userId:number,
+  size: number
+) => {
+  await conn.query(
+    `
+    UPDATE directories
+    SET size = size - $1
+    WHERE id = $2
+      AND user_id = $3
+    `,
+    [size, directoryId, userId]
+  );
+};

@@ -4,23 +4,21 @@ import {
   otpSchema,
   passwordSchema,
   roleId,
-  urlSchema,
   usernameSchema,
 } from "./common/common.validations.js";
+import { AuthMessages } from "../constant/message.constant.js";
 
 /**
  * {Object} SendOtpSchemaInput
  * @description Validation schema for otp send requests.
  */
+
 export const sendOtpSchema = z.object({
   email: emailSchema,
   purpose: z.enum(["register", "forget-password", "reset-password", "login"], {
-    message: "Invalid purpose.",
+    message: `${AuthMessages.INVALID_OTP_TYPE}`,
   }),
 });
-
-export type SendOtpSchemaInput = z.infer<typeof sendOtpSchema>;
-
 
 /**
  * {Object} UserRegisterInput
@@ -40,8 +38,6 @@ export const userRegisterSchema = z
     message: "Passwords do not match",
     path: ["confirmPassword"],
   });
-
-export type UserRegisterInput = z.infer<typeof userRegisterSchema>;
 
 /**
  * {Object} LoginUserInput

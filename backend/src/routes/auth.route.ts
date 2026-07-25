@@ -23,12 +23,13 @@ router.post("/register",validate(userRegisterSchema), userRegister)
  * @returns {Object} 400 - Validation error (e.g., invalid email format)
  * @returns {Object} 500 - Internal server error (e.g., email service failure)
  */
-router.post("/send-otp",validate(sendOtpSchema),sendOtp)
+
+router.post("/send-otp", validate(sendOtpSchema), sendOtp)
 
 
 
 router.post("/login",validate(LoginUserSchema),userLogin)
-router.post("/replace/session",validateChallengeSession,replaceSession)
+router.post("/replace/session", validateChallengeSession,replaceSession)
 
 router.post("/logout", validateAuthSession,logout);
 

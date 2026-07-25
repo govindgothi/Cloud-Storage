@@ -1,15 +1,24 @@
-import { clientIpParams, EmailParams, idParams, roleIdParams, sessionIdParams, tokenParams, userIdParams } from "./common.interface.js";
+import { clientIpParams, Email, EmailParams, idParams, roleIdParams, sessionIdParams, tokenParams, userIdParams } from "./common.interface.js";
 
  
+/**
+ * Request payload structure for user registration.
+ * @route POST /api/v1/auth/register
+ */
+export interface UserRegisterParams extends Email {
+  username: string;
+  password: string;
+  roleId: number;
+  otp: string;
+}
+
+
 export interface IpParams {
   ip: string;
 }
 
-export interface Id {
-  id: number;
-}
 
-export type GetUserParams = {
+export interface GetUserParams {
   email?: string;
   id?: number;
   fields: string[];

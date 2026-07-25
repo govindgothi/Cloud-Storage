@@ -10,6 +10,7 @@ export const validateChallengeSession = async (
 ) => {
   try {
     const authHeader = req.headers.authorization;
+
     let token: string | undefined;
 
     // Authorization: Bearer xxx
@@ -23,8 +24,9 @@ export const validateChallengeSession = async (
     if (!token) {
       throw  new ApiError("Authentication token is required",401,false)
     }
-
-    const decoded = decodeToken<{email:string,userId:number}>(token);
+    console.log("chaleg token",token)
+    const decoded = decodeToken<{email:string,userId:number} | null>(token);
+    
     if (!decoded?.userId) {
      throw new  ApiError("Invalid token",401,false)
     }
@@ -46,9 +48,11 @@ export const validateChallengeSession = async (
     }
 
     req.user = decoded;
+    console.log(decoded)
 
     next();
   } catch (error) {
+    console.log(error)
     next(error)
   }
 };

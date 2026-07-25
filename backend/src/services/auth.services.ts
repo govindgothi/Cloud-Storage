@@ -8,7 +8,6 @@ import {
 import { getUsersDetailByEmail } from "../models/common.models.js";
 import { ApiError } from "../utils/errorHandler.utils.js";
 import { getProfileUrl } from "../utils/getProfileUrl.utils.js";
-import { UserRegisterInput } from "../validations/auth.validations.js";
 import { generateSixDigitCode } from "../utils/common.utils.js";
 import { getRedisClient } from "../db/redis.db.js";
 import { successResponse } from "../utils/responseHandler.js";
@@ -21,6 +20,7 @@ import {
 } from "../producers/otpLogs.producers.js";
 import { hashValue, verifyHash } from "../utils/bcrypt.utils.js";
 import {
+  UserRegisterParams,
   forgetPasswordServiceType,
   logoutParamsType,
   replaceSessionType,
@@ -41,10 +41,10 @@ import {
 } from "../interface/common.interface.js";
 import { redisKeys } from "../constant/redisKey.js";
 
-export const userRegisterService = async (data: UserRegisterInput) => {
+
+export const userRegisterService = async ({ username, email, password, otp, roleId}: UserRegisterParams) => {
   /** Access the Redis instance to store temporary OTP verification tokens and otp  */
   const redis = getRedisClient();
-  const { username, email, password, otp, roleId } = data;
   /** Create profile url*/ 
   const profileUrl = getProfileUrl(username);
   /** Array of field, we want from database*/ 
@@ -300,8 +300,9 @@ export const userLoginService = async ({
   const roleId = userData[0].id;
   /** Get session store by userid or we can list sessions of user*/
   const { sessionsList, sessionIds } = await getUserSessions({ userId });
+  console.log(sessionsList,sessionIds)
   /** Check session list length and add condition if lenth is greater then 2*/ 
-  if (sessionIds.length === 2) {
+  if (sessionIds.length === 3) {
   /** create token  and session for login challenge*/
     const token = await loginChallengeSession({ userId, email, clientIp, roleId});
     /** return session list with token so user can logout or remove one session and login*/ 

@@ -22,7 +22,7 @@ export async function generateUploadUrl(key:string) {
 }
 
 export const generateS3Key = (
-  userId: string,
+  userId: number,
   fileName: string,
   date: Date = new Date()
 ): string => {
@@ -34,5 +34,5 @@ export const generateS3Key = (
     .replace(/\s+/g, "-")
     .replace(/[^a-zA-Z0-9._-]/g, "");
 
-  return `users/${userId}/${timestamp}-${sanitizedFileName}`;
+  return `uploads/${sanitizedFileName}-${userId}-${timestamp}`;
 };

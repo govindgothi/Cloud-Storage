@@ -4,8 +4,10 @@ import { z } from "zod";
 export const emailSchema = z
   .string()
   .trim()
-  .email("Invalid email format");
-
+  .toLowerCase() // 1. Normalizes casing so "User@Email.com" becomes "user@email.com"
+  .email("Invalid email format")
+  .max(255, "Email is too long"); // 2. Prevents excessively long inputs / DB issues
+  
 // Password validation
 export const passwordSchema = z
   .string()

@@ -60,13 +60,14 @@ import homeRouter from "./routes/home.routes.js"
 import userRouter from "./routes/auth.route.js"
 import maintenanceRouter from "./routes/maintenance.route.js"
 import directoryRouter from "./routes/directory.route.js"
+import fileRouter from "./routes/file.route.js"
 
 // Mount routes under base path "/api"
 app.use("/api/v1/home",homeRouter)
 app.use("/api/v1/auth",userRouter)
 app.use('/api/v1/maintenance',maintenanceRouter)
 app.use("/api/v1/directory",directoryRouter)
-
+app.use("/api/v1/file",fileRouter)
 // Global error handler
 app.use(errorHandler);
 
